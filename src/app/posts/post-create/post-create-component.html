@@ -1,0 +1,26 @@
+<mat-card>
+  <form (submit)="onSubmit()" [formGroup]="form">
+    <mat-form-field class="example-full-width">
+      <mat-label>Enter your Title</mat-label>
+      <input matInput
+        formControlName="title"/>
+        <mat-error *ngIf="form.get('title').invalid">{{'Error no titulo'}}</mat-error>
+    </mat-form-field>
+    <mat-form-field class="example-full-width">
+      <textarea matInput
+        placeholder="Digite algo que você deseja"
+        formControlName="content">
+      </textarea>
+      <mat-error *ngIf="form.get('content').invalid">{{'Error no content'}}</mat-error>
+    </mat-form-field>
+    <div class="image-preview" *ngIf="imagePreview !== '' && imagePreview && form.get('image').valid && mode === 'create'">
+      <img [src]="imagePreview" [alt]="form.get('title').value">
+    </div>
+    <div class="image-preview" *ngIf="mode === 'edit'">
+      <img [src]="imagePreview" [alt]="form.get('title').value">
+    </div>
+    <button mat-stroked-button color="primary" type="button" (click)="inputFile.click()">Escolher Arquivo</button>
+    <input type="file" #inputFile style="visibility: hidden;" (change)="onImagePicked($event)">
+    <button style="float: right;" mat-raised-button color="primary" type="submit">Salvar</button>
+  </form>
+</mat-card>
