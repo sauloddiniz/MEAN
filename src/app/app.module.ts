@@ -8,6 +8,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatPaginatorModule } from '@angular/material/paginator';
 import { ReactiveFormsModule } from '@angular/forms'
 
 import { AppRoutingModule } from './app-routing.module';
@@ -36,6 +37,7 @@ import { HttpClientModule } from '@angular/common/http';
     MatInputModule,
     MatToolbarModule,
     MatExpansionModule,
+    MatPaginatorModule,
     HttpClientModule,
     MatProgressSpinnerModule
   ],

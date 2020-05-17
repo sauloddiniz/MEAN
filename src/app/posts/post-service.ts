@@ -8,7 +8,7 @@ import { Router } from '@angular/router';
 @Injectable({providedIn :'root'}) //INJETA O SERVIÇO NO ROOT DO PROJETO, 2º opção utilizando esta não precisa declarar no providers [] do mudele principal
 export class PostService {
   private posts: Post [] = [];
-  private postUpdate = new Subject<Post[]>();
+  private postUpdate = new Subject<{posts: Post[], postCount: number}>();
 
   constructor(private http: HttpClient, private router: Router) {}
 
@@ -20,21 +20,26 @@ export class PostService {
 //      });
 //  }
 
-  getPosts() {
-    this.http.get<{message: string, posts: Post[]}>('http://localhost:3000/api/posts')
+  getPosts(postPerPage: number, currentPage: number) {
+    const queryParans = `?pagesize=${postPerPage}&page=${currentPage}`;
+    this.http.get<{message: string, posts: Post[], maxPosts: number}>('http://localhost:3000/api/posts' + queryParans)
       .pipe(map((postData) => {
-        return postData.posts.map(post => {
-          return {
-            title : post.title,
-            content : post.content,
-            _id : post._id,
-            imagePath: post.imagePath
-          }
-        })
+        return {
+          posts: postData.posts.map(post => {
+            return {
+              _id: post._id,
+              title: post.title,
+              content: post.content,
+              imagePath: post.imagePath
+            }
+          }),
+          maxPost: postData.maxPosts
+        }
       }))
-      .subscribe((postTrasnformed) => {
-        this.posts = postTrasnformed;
-        this.postUpdate.next(this.posts);
+      .subscribe((postTrasnformedData) => {
+        this.posts = postTrasnformedData.posts;
+
+        this.postUpdate.next({posts: this.posts, postCount: postTrasnformedData.maxPost});
       });
   }
 
@@ -65,7 +70,6 @@ export class PostService {
     }
     this.http.put('http://localhost:3000/api/posts/' + id, postData)
       .subscribe((response) => {
-        this.postUpdate.next([...this.posts]);
         this.router.navigate(['/']);
       });
   }
@@ -77,19 +81,12 @@ export class PostService {
     postData.append('image', image, title);
     this.http.post<{message: string, post: Post}>('http://localhost:3000/api/posts', postData)
       .subscribe((postData) => {
-        this.posts.push(postData.post);
-        this.postUpdate.next([...this.posts]);
         this.router.navigate(['/']);
       });
   }
 
   deletePostById(id: string) {
-    this.http.delete('http://localhost:3000/api/posts/' + id)
-      .subscribe(() => {
-        const updateListPost = this.posts.filter(post => post._id !== id);
-        this.posts = updateListPost;
-        this.postUpdate.next(this.posts);
-      });
+   return this.http.delete('http://localhost:3000/api/posts/' + id);
   }
 
   getPost(id: string) {

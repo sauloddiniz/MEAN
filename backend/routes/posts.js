@@ -66,13 +66,18 @@ router.put('/:_id', multer({storage: storage}).single('image'), (req, res, next)
 });
 
 router.get('', (req, res, next) => {
-  Post.find()
-    .then(documents => {
-      res.status(200).json({
-        message: 'get efetuado com sucesso',
-        posts : documents
-      });
-    });
+
+  const pageSize = +req.query.pagesize; // a utilidade do + e para informar que e NUMERO
+  const currentPage = +req.query.page;
+  const postQuery = Post.find();
+  let fetchPost;
+  if (pageSize && currentPage) {
+     postQuery.skip(pageSize * (currentPage - 1)).limit(pageSize);
+  }
+  postQuery
+  .then(documents => { fetchPost = documents; return Post.count(); })
+  .then((count) => { res.status(200).json( {message: 'get efetuado com sucesso', posts: fetchPost, maxPosts: count} );
+  });
 });
 
 router.get('/:_id', (req, res, next) => {

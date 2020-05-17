@@ -18,4 +18,10 @@
     </mat-expansion-panel>
   </mat-accordion>
 </mat-card>
+<mat-paginator
+  [length]="totalPagination"
+  [pageSize]="postPorPage"
+  [pageSizeOptions]="pageSizeOptions"
+  (page)="pageEventPaginator($event)"
+></mat-paginator>
 <p class="mat-body-1" *ngIf="posts.length <= 0">Nenhum post criado</p>
